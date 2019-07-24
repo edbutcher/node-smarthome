@@ -18,7 +18,7 @@ export default class DeviceLog extends PureComponent {
 
     render() {
         const { device, log } = this.state;
-
+        console.log(log);
         if (!device) {
             return null;
         }

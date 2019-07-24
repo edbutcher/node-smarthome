@@ -1,4 +1,5 @@
 const Device = require('../models/device');
+const Log = require('../models/log');
 const { sendRequest } = require('../utils/request');
 
 module.exports = {
@@ -7,6 +8,7 @@ module.exports = {
   addDevice,
   removeDevice,
   updateDevice,
+  getLogById,
 };
 
 const deviceAdapter = ({
@@ -21,6 +23,16 @@ const deviceAdapter = ({
     address,
     port,
     state,
+});
+
+const logAdapter = ({
+  deviceId,
+  action,
+  date,
+}) => ({
+  deviceId,
+  action,
+  date,
 });
 
 async function getDevices() {
@@ -62,7 +74,8 @@ async function updateDevice(deviceId, data) {
       device.address,
       device.port,
       data.state
-    )
+    );
+    await setLogById(deviceId, data.state);
   }
 
   Device.findByIdAndUpdate(deviceId, data).exec();
@@ -72,7 +85,21 @@ async function updateDeviceStatus(address, port, state) {
   const command = state === 'off'
     ? 'Power off'
     : 'Power On';
-
   const url = `http://${address}:${port}/cm?cmnd=${command}`;
+
   await sendRequest(url);
+};
+
+async function setLogById(deviceId, action) {
+  const logs = new Log({
+    deviceId,
+    action,
+  });
+
+  await logs.save();
+};
+
+async function getLogById(deviceId) {
+  const logs = await Log.find({ deviceId }).exec();
+  return logs.map(logAdapter);
 };

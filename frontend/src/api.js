@@ -55,13 +55,6 @@ export async function switchOff(deviceId) {
 }
 
 export async function getDeviceLog(deviceId) {
-    return [
-        {
-            date: '2018-31-08 16:00:00',
-            action: 'On'
-        },
-        {
-            date: '2018-31-08 17:00:00',
-            action: 'Off'
-        }]
+    const response = await axios.get(`${API_URL}/devices/log/${deviceId}`);
+    return response.data;
 }

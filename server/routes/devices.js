@@ -49,4 +49,11 @@ router.patch('/:id', async (req, res) => {
   }
 })
 
+router.get('/log/:id', async (req, res) => {
+  const { id } = req.params;
+  const log = await devicesService.getLogById(id);
+
+  res.json(log);
+})
+
 module.exports = router;

@@ -10,12 +10,12 @@ mongoose.connect('mongodb://localhost:27017/node-workshop-4', {useNewUrlParser: 
 
 app.use(exprees.json());
 app.use(corsMiddleware);
+
 app.use('/devices', devicesRouter);
 
 app.get('/', (req, res) => {
   res.json({result: 'ok ok'});
 });
-
 
 app.listen(PORT, () => {
   console.log(`Server is listrning on http://localhost:${PORT}`)
