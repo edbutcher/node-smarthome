@@ -1,5 +1,6 @@
 const express = require('express');
 const devicesService = require('../services/devices');
+const logService = require('../services/log');
 
 const router = express.Router();
 
@@ -43,17 +44,12 @@ router.patch('/:id', async (req, res) => {
 
   try {
     await devicesService.updateDevice(id, deviceData);
+    await logService.addLog(id, deviceData.state);
+
     res.sendStatus(200);
   } catch {
     res.sendStatus(500);
   }
-})
-
-router.get('/log/:id', async (req, res) => {
-  const { id } = req.params;
-  const log = await devicesService.getLogById(id);
-
-  res.json(log);
 })
 
 module.exports = router;

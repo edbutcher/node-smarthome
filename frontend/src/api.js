@@ -2,24 +2,6 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:4000';
 
-let index = 3;
-let devices = {
-    device1: {
-        id: 'device1',
-        name: 'Device #1',
-        address: '192.168.1.50',
-        port: 90,
-        state: 'on'
-    },
-    device2: {
-        id: 'device2',
-        name: 'Device #2',
-        address: '192.168.1.60',
-        port: 80,
-        state: 'off'
-    }
-};
-
 export async function getDevices() {
     const response = await axios.get(`${API_URL}/devices`);
     return response.data;
@@ -44,17 +26,57 @@ export async function updateDevice(deviceId, data) {
 
 export async function switchOn(deviceId) {
     await updateDevice(deviceId, {
-        state: 'on'
+        state: 'on',
     });
 }
 
 export async function switchOff(deviceId) {
     await updateDevice(deviceId, {
-        state: 'off'
+        state: 'off',
     });
 }
 
 export async function getDeviceLog(deviceId) {
-    const response = await axios.get(`${API_URL}/devices/log/${deviceId}`);
+    const response = await axios.get(`${API_URL}/log/devices/${deviceId}`);
+    return response.data;
+}
+
+// GROUPS API
+export async function getGroups() {
+    const response = await axios.get(`${API_URL}/groups`);
+    return response.data;
+}
+
+export async function getGroupById(groupId) {
+    const response = await axios.get(`${API_URL}/groups/${groupId}`);    
+    return response.data;
+}
+
+export async function addGroup(group) {
+    await axios.post(`${API_URL}/groups`, group);
+}
+
+export async function removeGroup(groupId) {
+    await axios.delete(`${API_URL}/groups/${groupId}`);
+}
+
+export async function updateGroup(groupId, data) {
+    await axios.patch(`${API_URL}/groups/${groupId}`, data);
+}
+
+export async function switchOnGroup(groupId) {
+    await updateGroup(groupId, {
+        state: 'on',
+    });
+}
+
+export async function switchOffGroup(groupId) {
+    await updateGroup(groupId, {
+        state: 'off',
+    });
+}
+
+export async function getGroupLog(groupId) {
+    const response = await axios.get(`${API_URL}/log/groups/${groupId}`);
     return response.data;
 }

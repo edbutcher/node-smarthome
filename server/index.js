@@ -1,7 +1,9 @@
 const exprees = require('express');
 const mongoose = require('mongoose');
 const corsMiddleware = require('./middlewares/cors');
-const devicesRouter = require('./routes/devices.js');
+const devicesRouter = require('./routes/devices');
+const groupsRouter = require('./routes/groups');
+const logRouter = require('./routes/log');
 
 const app = exprees();
 const PORT = 4000;
@@ -12,6 +14,8 @@ app.use(exprees.json());
 app.use(corsMiddleware);
 
 app.use('/devices', devicesRouter);
+app.use('/log', logRouter);
+app.use('/groups', groupsRouter);
 
 app.get('/', (req, res) => {
   res.json({result: 'ok ok'});
