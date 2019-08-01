@@ -77,6 +77,6 @@ export async function switchOffGroup(groupId) {
 }
 
 export async function getGroupLog(groupId) {
-    const response = await axios.get(`${API_URL}/log/groups/${groupId}`);
+    const response = await axios.get(`${API_URL}/log/devices/${groupId}`);
     return response.data;
 }

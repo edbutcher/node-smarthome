@@ -4,12 +4,12 @@ import { addGroup, getDevices } from '../api';
 
 export default class GroupAdd extends PureComponent {
     state = {
-        allDevices: null,
+        allDevices: [],
     };
 
     componentDidMount = async () => {
         this.setState({
-            allDevices: await getDevices()
+            allDevices: await getDevices(),
         });
     };
 

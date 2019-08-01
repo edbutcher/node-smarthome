@@ -1,17 +1,19 @@
 import React, { PureComponent } from 'react';
 import GroupForm from '../components/GroupForm';
-import { getGroupById, updateGroup } from '../api';
+import { getGroupById, updateGroup, getDevices } from '../api';
 
 export default class GroupEdit extends PureComponent {
     state = {
-        group: null
+        group: null,
+        allDevices: [],
     };
 
     componentDidMount = async () => {
         const { id } = this.props.match.params;
 
         this.setState({
-            group: await getGroupById(id)
+            group: await getGroupById(id),
+            allDevices: await getDevices(),
         });
     };
 
@@ -45,7 +47,7 @@ export default class GroupEdit extends PureComponent {
 
                 <div className="row">
                     <div className="col">
-                        <GroupForm onSubmit={this.handleFormSubmit} group={group} />
+                        <GroupForm onSubmit={this.handleFormSubmit} group={group} allDevices={this.state.allDevices} />
                     </div>
                 </div>
             </div>
