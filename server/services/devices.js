@@ -1,5 +1,5 @@
 const Device = require('../models/device');
-const { sendRequest } = require('../utils/request');
+const updateDeviceStatus = require('../utils/updateDeviceStatus');
 
 const deviceAdapter = ({
   _id,
@@ -60,14 +60,7 @@ async function updateDevice(deviceId, data) {
   Device.findByIdAndUpdate(deviceId, data).exec();
 };
 
-async function updateDeviceStatus(address, port, state) {
-  const command = state === 'off'
-    ? 'Power off'
-    : 'Power On';
-  const url = `http://${address}:${port}/cm?cmnd=${command}`;
 
-  await sendRequest(url);
-};
 
 module.exports = {
   getDevices,

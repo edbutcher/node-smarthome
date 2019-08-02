@@ -1,18 +1,18 @@
 const Group = require('../models/group');
-// const { sendRequest } = require('../utils/request');
+const Device = require('../models/device');
+const updateDeviceStatus = require('../utils/updateDeviceStatus');
+const logService = require('./log');
 
 const groupAdapter = ({
   _id,
   name,
-  address,
-  port,
-  state
+  state,
+  devices,
 }) => ({
     id: _id,
     name,
-    address,
-    port,
     state,
+    devices,
 });
 
 async function getGroups() {
@@ -29,50 +29,58 @@ async function getGroupById(groupId) {
   }
 };
 
-async function addGroup(groupData) {
+async function addGroup({ name, devices }) {
   const group = new Group({
     state: 'off',
-    ...groupData,
+    name,
+    devices
   });
 
   await group.save();
 };
 
-// async function removeDevice(deviceId) {
-//   await Device.findByIdAndDelete(deviceId).exec();
-// };
+async function removeGroup(groupId) {
+  await Group.findByIdAndDelete(groupId).exec();
+};
 
-// async function updateDevice(deviceId, data) {
-//   const device = await Device.findById(deviceId).exec();
+async function updateGroup(groupId, data) {
+  const group = await Group.findById(groupId).exec();
+  if (!group) {
+    return null;
+  };
 
-//   if (!device) {
-//     return null;
-//   };
+  console.log(groupId, data);
 
-//   if (data.state) {
-//     await updateDeviceStatus(
-//       device.address,
-//       device.port,
-//       data.state
-//     );
-//   }
+  if (data.state) {
+    const devices = await Promise.all(
+      group.devices.map(async deviceId => await Device.findById(deviceId).exec())
+    );
 
-//   Device.findByIdAndUpdate(deviceId, data).exec();
-// };
+    await Promise.all(
+      devices.map(async device => await updateDeviceStatus(
+        device.address,
+        device.port,
+        data.state
+      ))
+    );
 
-// async function updateDeviceStatus(address, port, state) {
-//   const command = state === 'off'
-//     ? 'Power off'
-//     : 'Power On';
-//   const url = `http://${address}:${port}/cm?cmnd=${command}`;
+    await Promise.all(
+      devices.map(async device => await Device.findByIdAndUpdate(device._id, {state: data.state}).exec())
+    );
 
-//   await sendRequest(url);
-// };
+    await Promise.all(
+      group.devices.map(async deviceId => await logService.addLog(deviceId, data.state))
+    )
+
+  }
+
+  Group.findByIdAndUpdate(groupId, data).exec();
+};
 
 module.exports = {
   getGroups,
   getGroupById,
   addGroup,
-  // removeDevice,
-  // updateDevice,
+  removeGroup,
+  updateGroup,
 };
